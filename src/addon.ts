@@ -22,7 +22,7 @@ builder.defineStreamHandler<AddonConfig>(async (args) => {
     const streams: Stream[] = channel.item.map((item) => ({
       description: `${item.title}\n${item.category}`,
       name: `NZB`,
-      url: item.enclosure["@attributes"].url,
+      nzbUrl: item.enclosure["@attributes"].url,
     }));
 
     console.log(`Found ${streams.length} streams`);
