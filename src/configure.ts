@@ -314,6 +314,12 @@ select {
 .info-note a:hover {
   color: #4db84d;
 }
+
+.github {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+}
 `;
 export function landingTemplate(manifest: Manifest): string {
     const logo = manifest.logo || "https://dl.strem.io/addon-logo.png";
@@ -446,9 +452,8 @@ export function landingTemplate(manifest: Manifest): string {
       </div>
 
       <div class="info-note">
-        <strong>⚠️ Experimental:</strong> This addon is still in development.
+        <strong>⚠️ Experimental:</strong> usenet streaming is experimental.
         <a href="https://blog.stremio.com/stremio-new-stream-sources-usenet-rar-zip-ftp-and-more/" target="_blank" rel="noopener">Learn more about Usenet support in Stremio →</a>
-        <a class="github" href="https://github.com/sleeyax/stremio-nzb-addon" target="_blank" rel="noopener">Join us in development on GitHub →</a>
       </div>
 
       <h3>Features</h3>
@@ -465,6 +470,8 @@ export function landingTemplate(manifest: Manifest): string {
       <a id="installLink" class="install-link" href="#">Install Addon</a>
       <div class="version">v${manifest.version || "0.0.0"}</div>
       ${contactHTML}
+
+      <a class="github" href="https://github.com/sleeyax/stremio-nzb-addon" target="_blank" rel="noopener">GitHub →</a>
     </div>
     <script>
       ${script}
