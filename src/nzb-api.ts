@@ -1,6 +1,6 @@
 import { RSS } from "./types";
 
-export type FunctionType = "search" | "movie";
+export type FunctionType = "search" | "movie" | "tvsearch";
 
 export class NZBWebApi {
   constructor(
@@ -32,6 +32,16 @@ export class NZBWebApi {
   async searchMovie(imdbid: string): Promise<RSS> {
     const url = this.buildUrl('movie');
     url.searchParams.set("imdbid", imdbid);
+    url.searchParams.set("extended", "1");
+    return this.call(url);
+  }
+
+  async searchSeries(tvdbId: string, season: string, episode: string): Promise<RSS> {
+    const url = this.buildUrl('tvsearch');
+    url.searchParams.set("tvdbid", tvdbId);
+    url.searchParams.set("season", season);
+    url.searchParams.set("ep", episode);
+    url.searchParams.set("extended", "1");
     return this.call(url);
   }
 }
