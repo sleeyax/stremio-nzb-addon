@@ -5,14 +5,12 @@ import { NZBWebApi } from "./nzb-api.js";
 
 const builder = new AddonBuilder(manifest);
 
-builder.defineStreamHandler<AddonConfig>(async (args) => {
+builder.defineStreamHandler<AddonConfig>(async ({config, extra, id, type}) => {
   try {
-    console.log(args);
-    const imdbid = args.id.replace("tt", "");
-    const config = args.config;
+    const imdbid = id.replace("tt", "");
 
-    if (args.type !== "movie") {
-      console.warn("Unsupported type:", args.type);
+    if (type !== "movie") {
+      console.warn("Unsupported type:", type);
       return ({ streams: [], cacheMaxAge: 0, staleRevalidate: 0 });
     }
 
@@ -35,11 +33,8 @@ builder.defineStreamHandler<AddonConfig>(async (args) => {
 });
 
 
-builder.defineCatalogHandler<AddonConfig>(async (args) => {
+builder.defineCatalogHandler<AddonConfig>(async ({config, extra, id, type}) => {
    try {
-    console.log(args);
-    const config = args.config;
-    const extra = args.extra
     const searchQuery = extra.search;
 
     if (searchQuery == null || searchQuery.trim() === "") {
@@ -66,12 +61,10 @@ builder.defineCatalogHandler<AddonConfig>(async (args) => {
   }
 });
 
-builder.defineMetaHandler<AddonConfig>(async (args) => {
+builder.defineMetaHandler<AddonConfig>(async ({config, extra, id, type}) => {
   try {
-    console.log(args);
-
     return ({
-      meta: { id: args.id, name: "Test", type: "tv" },
+      meta: { id, name: "Test", type: "tv" },
       cacheMaxAge: 0,
       staleRevalidate: 0,
       staleError: 0,
