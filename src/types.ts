@@ -1,8 +1,6 @@
 export interface AddonConfig {
-  streamingServerUrl: string;
   indexerUrl: string;
   indexerApiKey: string;
-  nntpServerUrls: string;
 };
 
 export interface RSS {

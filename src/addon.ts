@@ -10,7 +10,6 @@ builder.defineStreamHandler<AddonConfig>(async (args) => {
     console.log(args);
     const imdbid = args.id.replace("tt", "");
     const config = args.config;
-    const baseUrl = "http://localhost:3000"; // TODO: add environment variable for this
 
     if (args.type !== "movie") {
       console.warn("Unsupported type:", args.type);
@@ -23,9 +22,7 @@ builder.defineStreamHandler<AddonConfig>(async (args) => {
     const streams: Stream[] = channel.item.map((item) => ({
       description: `${item.title}\n${item.category}`,
       name: `NZB`,
-      url: `${baseUrl}/${encodeURIComponent(
-        JSON.stringify(config)
-      )}/stream/${encodeURIComponent(item.enclosure["@attributes"].url)}`,
+      url: item.enclosure["@attributes"].url,
     }));
 
     console.log(`Found ${streams.length} streams`);

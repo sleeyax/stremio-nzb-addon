@@ -20,14 +20,8 @@ export const manifest: Manifest = {
   types: ["movie", "series", "tv"],
   catalogs: [catalog],
   config: [
-    { key: "streamingServerUrl", type: "text", title: "Streaming server URL" },
     { key: "indexerUrl", type: "text", title: "Indexer URL" },
     { key: "indexerApiKey", type: "text", title: "Indexer API key" },
-    {
-      key: "nntpServerUrls",
-      type: "text",
-      title: "NNTP server URLs (separated by comma)",
-    },
   ],
   behaviorHints: { configurable: true, configurationRequired: true },
 };
