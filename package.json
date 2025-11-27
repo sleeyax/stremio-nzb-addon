@@ -1,6 +1,7 @@
 {
   "name": "stremio-nzb-addon",
   "version": "1.0.0",
+  "packageManager": "pnpm@10.21.0",
   "description": "Stremio addon which provides usenet streams from NZBHydra 2",
   "main": "dist/server.js",
   "type": "module",
