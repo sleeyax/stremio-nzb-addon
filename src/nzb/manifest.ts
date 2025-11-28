@@ -13,7 +13,7 @@ export const manifest: Manifest = {
   name: "NZB",
   description: "Provides usenet streams from your NZB indexer(s)",
   logo: "https://raw.githubusercontent.com/nzbget/nzbget/5e26d52d706f129769e1d620a595c78498ca8cff/webui/img/favicon-256x256.png",
-  version: "1.0.0",
+  version: "1.1.0",
   resources: [
     "catalog",
     { name: "meta", types: [catalog.type], idPrefixes: [catalog.id] },
