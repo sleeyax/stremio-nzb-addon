@@ -7,6 +7,7 @@ import {
 } from "@stremio-addon/sdk";
 import { NzbHydraAddonConfig, Item, NzbAddonConfig } from "./types.js";
 import { NZBWebApiPool } from "./nzb-api.js";
+import {parse as parseTorrentTitle} from "parse-torrent-title";
 
 export function createAddonInterface(
   manifest: Manifest,
@@ -41,7 +42,7 @@ export function createAddonInterface(
 
         const nntpServers = config.nntpServers.map(({ server }) => server);
         const streams: Stream[] = (items ?? []).map((item) =>
-          itemToStream(item, nntpServers, name),
+          itemToStream(item, nntpServers, name, manifest.id),
         );
 
         console.log(`Found ${streams.length} streams for ${type} ${id}`);
@@ -111,7 +112,7 @@ export function createAddonInterface(
               title: item.title,
               overview: item.description,
               released: new Date(item.pubDate).toISOString(),
-              streams: [itemToStream(item, nntpServers, name)],
+              streams: [itemToStream(item, nntpServers, name, manifest.id)],
             })),
           },
           cacheMaxAge: 3600,
@@ -128,17 +129,77 @@ export function createAddonInterface(
   return addonInterface;
 }
 
-function itemToStream(item: Item, servers: string[], name: string): Stream {
+function itemToStream(item: Item, servers: string[], name: string, id: string): Stream {
   const size = getItemSize(item);
-  const sizeStr = size ? toHumanFileSize(size) + "\n" : "";
+  const sizeStr = size ? toHumanFileSize(size) : undefined;
+  const parsed = parseTorrentTitle(item.title);
+
+  let descriptionParts = [`📁 ${parsed.title}`];
+  if (parsed.source || parsed.codec || parsed.group) {
+    let innerParts: string[] = [];
+    if (parsed.source) {
+      innerParts.push(parsed.source);
+    }
+    if (parsed.codec) {
+      innerParts.push(parsed.codec);
+    }
+    if (parsed.group) {
+      innerParts.push(parsed.group);
+    }
+    descriptionParts.push(`🎥 ${innerParts.join(' • ')}`);
+  }
+  if (sizeStr) {
+    descriptionParts.push(`📦 ${sizeStr.trim()}`);
+  }
+  if (parsed.audio || parsed.language) {
+    let audioParts: string[] = [];
+    if (parsed.audio) {
+      audioParts.push(parsed.audio);
+    }
+    if (parsed.language) {
+      audioParts.push(parsed.language);
+    }
+    descriptionParts.push(`🎧 ${audioParts.join(' • ')}`);
+  }
+  if (item.comments) {
+    const indexer = new URL(item.comments).hostname.replace("www.", "").replace("api.", "");
+    descriptionParts.push(`🔍 ${indexer}`);
+  }
+
+  let nameParts = [name];
+  if (parsed.resolution) {
+    nameParts.push(parsed.resolution);
+  }
+
+  let bingeGroupParts: string[] = [id];
+  if (parsed.resolution) {
+    bingeGroupParts.push(parsed.resolution);
+  }
+  if (parsed.source) {
+    bingeGroupParts.push(parsed.source);
+  }
+  if (parsed.codec) {
+    bingeGroupParts.push(parsed.codec);
+  }
+  if (parsed.group) {
+    bingeGroupParts.push(parsed.group);
+  }
+  if (parsed.audio) {
+    bingeGroupParts.push(parsed.audio);
+  }
+  if (parsed.language) {
+    bingeGroupParts.push(parsed.language);
+  }
+
   return {
-    title: `${item.title}\n${sizeStr}${item.category}`,
-    name,
+    description: descriptionParts.join(" "),
+    name: nameParts.join(" "),
     nzbUrl: getNzbUrlFromItem(item),
     servers,
     behaviorHints: {
       filename: item.title,
-      videoSize: size,
+      videoSize: size || undefined,
+      bingeGroup: bingeGroupParts.join("|"),
     }
   };
 }
