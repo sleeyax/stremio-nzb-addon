@@ -2,20 +2,9 @@ import { AddonBuilder, MetaPreview, Stream } from "@stremio-addon/sdk";
 import { catalog, manifest } from "./manifest.js";
 import { NzbHydraAddonConfig, Item } from "../types.js";
 import { NZBWebApi } from "../nzb-api.js";
-import { toHumanFileSize, imdbToTvdb, getItemSize } from "../utils.js";
+import { imdbToTvdb, itemToStream } from "../utils.js";
 
 const builder = new AddonBuilder(manifest);
-
-function itemToStream(item: Item, servers: string[]): Stream {
-  const size = getItemSize(item);
-  const sizeStr = size ? toHumanFileSize(size) + "\n" : "";
-  return {
-    title: `${item.title}\n${sizeStr}${item.category}`,
-    name: "NZB",
-    nzbUrl: item.link?.split("&amp;").join("&") || item.enclosure["@attributes"].url,
-    servers
-  };
-}
 
 builder.defineStreamHandler<NzbHydraAddonConfig>(async ({config, id, type}) => {
   try {
@@ -43,7 +32,7 @@ builder.defineStreamHandler<NzbHydraAddonConfig>(async ({config, id, type}) => {
     }
 
     const nntpServers = config.nttpServers.map(({server}) =>server);
-    const streams: Stream[] = items.map((item) => itemToStream(item, nntpServers));
+    const streams: Stream[] = items.map((item) => itemToStream(item, nntpServers, "NZBH"));
 
     console.log(`Found ${streams.length} streams for ${type} ${id}`);
 

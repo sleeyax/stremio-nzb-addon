@@ -2,7 +2,7 @@ import { Config, Item } from "./types.js";
 import { getRouter } from "@stremio-addon/node-express";
 import { Router } from "express";
 import { landingTemplate } from "./configure.js";
-import { AddonInterface, Manifest } from "@stremio-addon/sdk";
+import { AddonInterface, Manifest, Stream } from "@stremio-addon/sdk";
 
 export function toHumanFileSize(size: number): string {
   if (size === 0) {
@@ -60,4 +60,15 @@ export function createRouter(manifest: Manifest, addonInterface: AddonInterface,
   });
   
   return router;
+}
+
+export function itemToStream(item: Item, servers: string[], name: string): Stream {
+  const size = getItemSize(item);
+  const sizeStr = size ? toHumanFileSize(size) + "\n" : "";
+  return {
+    title: `${item.title}\n${sizeStr}${item.category}`,
+    name,
+    nzbUrl: item.link?.split("&amp;").join("&") || item.enclosure["@attributes"].url,
+    servers
+  };
 }
