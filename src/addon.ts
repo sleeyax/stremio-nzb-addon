@@ -136,6 +136,10 @@ function itemToStream(item: Item, servers: string[], name: string): Stream {
     name,
     nzbUrl: getNzbUrlFromItem(item),
     servers,
+    behaviorHints: {
+      filename: item.title,
+      videoSize: size,
+    }
   };
 }
 
