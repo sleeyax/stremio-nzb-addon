@@ -600,6 +600,7 @@ export function landingTemplate(manifest: Manifest, config: Config): string {
         <div class="logo">
           <img src="${logo}" alt="${manifest.name}">
         </div>
+        <h1><span class="accent">${manifest.name}</span></h1>
         <h2 class="description">${manifest.description || ""}</h2>
       </div>
 
