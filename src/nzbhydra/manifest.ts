@@ -12,7 +12,7 @@ export const manifest: Manifest = {
   id: "com.sleeyax.nzbhydra",
   name: "NZBHydra 2",
   description: "Provides usenet streams from your NZBHydra 2 instance",
-  logo: "https://raw.githubusercontent.com/theotherp/nzbhydra2/c06734c1489b361680dbae6f6cef2fc9841121d2/core/ui-src/img/banner-grey-dark.png",
+  logo: "https://raw.githubusercontent.com/theotherp/nzbhydra2/c06734c1489b361680dbae6f6cef2fc9841121d2/core/ui-src/img/logo.png",
   version: "1.1.0",
   resources: [
     "catalog",
