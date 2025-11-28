@@ -19,6 +19,16 @@ export function createAddonInterface(
   builder.defineStreamHandler<NzbHydraAddonConfig>(
     async ({ config, id, type }) => {
       try {
+        const nntpServers = config.nttpServers.map(({ server }) => server);
+
+        if (id.startsWith(catalog.id + ":")) {
+          const encodedUrl = id.replace(catalog.id + ":", "");
+          const url = decodeURIComponent(encodedUrl);
+          return {
+            streams: [{ nzbUrl: url, servers: nntpServers, name, title: "Stream" }],
+          };
+        }
+
         const api = new NZBWebApi(config.indexerUrl, config.indexerApiKey);
         let items: Item[] = [];
 
@@ -38,11 +48,10 @@ export function createAddonInterface(
             console.warn(`Could not find TVDB ID for IMDB: tt${imdbId}`);
           }
         } else {
-          console.warn("Unsupported type:", type);
+          console.warn("Unsupported ", `type '${type}' with id ${id}`);
           return { streams: [], cacheMaxAge: 0, staleRevalidate: 0 };
         }
 
-        const nntpServers = config.nttpServers.map(({ server }) => server);
         const streams: Stream[] = items.map((item) =>
           itemToStream(item, nntpServers, name)
         );
@@ -69,9 +78,7 @@ export function createAddonInterface(
         const { channel } = await api.search(search);
 
         const metas: MetaPreview[] = channel.item.map((item) => ({
-          id: `${catalog.id}:${encodeURIComponent(
-            item.enclosure["@attributes"].url
-          )}`,
+          id: `${catalog.id}:${encodeURIComponent(getNzbUrlFromItem(item))}`,
           type: "tv",
           name: item.title,
           description: item.description,
@@ -88,7 +95,7 @@ export function createAddonInterface(
   builder.defineMetaHandler<NzbHydraAddonConfig>(async ({ id }) => {
     try {
       return {
-        meta: { id, name: "", type: "tv" },
+        meta: { id, name: catalog.name, type: "tv" },
         cacheMaxAge: 0,
         staleRevalidate: 0,
         staleError: 0,
@@ -110,10 +117,15 @@ function itemToStream(item: Item, servers: string[], name: string): Stream {
   return {
     title: `${item.title}\n${sizeStr}${item.category}`,
     name,
-    nzbUrl:
-      item.link?.split("&amp;").join("&") || item.enclosure["@attributes"].url,
+    nzbUrl: getNzbUrlFromItem(item),
     servers,
   };
+}
+
+function getNzbUrlFromItem(item: Item): string {
+  return (
+    item.link?.split("&amp;").join("&") || item.enclosure["@attributes"].url
+  );
 }
 
 export function toHumanFileSize(size: number): string {
