@@ -13,7 +13,7 @@ export const manifest: Manifest = {
   name: "NZBHydra 2",
   description: "Provides usenet streams from your NZBHydra 2 instance",
   logo: "https://raw.githubusercontent.com/theotherp/nzbhydra2/c06734c1489b361680dbae6f6cef2fc9841121d2/core/ui-src/img/banner-grey-dark.png",
-  version: "1.0.1",
+  version: "1.1.0",
   resources: [
     "catalog",
     { name: "meta", types: [catalog.type], idPrefixes: [catalog.id] },
