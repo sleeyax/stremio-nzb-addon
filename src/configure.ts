@@ -455,7 +455,7 @@ export function landingTemplate(manifest: Manifest, config: Config): string {
 
       const updateLink = () => {
         const configObj = buildConfig();
-        installLink.href = 'stremio://' + window.location.host + '/' + encodeURIComponent(JSON.stringify(configObj)) + '/manifest.json';
+        installLink.href = 'stremio://' + window.location.host + window.location.pathname.replace('/configure', '') + '/' + encodeURIComponent(JSON.stringify(configObj)) + '/manifest.json';
       }
 
       // password visibility toggles
@@ -585,7 +585,7 @@ export function landingTemplate(manifest: Manifest, config: Config): string {
       if (typeof updateLink === 'function')
         updateLink()
       else
-        installLink.href = 'stremio://' + window.location.host + '/manifest.json'
+        installLink.href = 'stremio://' + window.location.host + window.location.pathname.replace('/configure', '') + '/manifest.json'
     </script>
   </body>
 
