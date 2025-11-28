@@ -7,7 +7,7 @@ import {
 } from "@stremio-addon/sdk";
 import { NzbHydraAddonConfig, Item, NzbAddonConfig } from "./types.js";
 import { NZBWebApiPool } from "./nzb-api.js";
-import {parse as parseTorrentTitle} from "parse-torrent-title";
+import { parse as parseTorrentTitle } from "parse-torrent-title";
 
 export function createAddonInterface(
   manifest: Manifest,
@@ -41,7 +41,9 @@ export function createAddonInterface(
         }
 
         const nntpServers = config.nntpServers.map(({ server }) => server);
-        const streams: Stream[] = (items ?? []).map((item) =>
+        const sortedItems = items || [];
+        sortItemsByResolution(sortedItems);
+        const streams: Stream[] = sortedItems.map((item) =>
           itemToStream(item, nntpServers, name, manifest.id),
         );
 
@@ -129,7 +131,46 @@ export function createAddonInterface(
   return addonInterface;
 }
 
-function itemToStream(item: Item, servers: string[], name: string, id: string): Stream {
+function sortItemsByResolution(items: Item[]): Item[] {
+  const resolutionOrder = [
+    ["2160p", "4k"],
+    "1440p",
+    "1080p",
+    "720p",
+    "480p",
+    "360p",
+  ];
+
+  const getResolutionIndex = (res: string): number => {
+    const lowerRes = res.toLowerCase();
+    for (let i = 0; i < resolutionOrder.length; i++) {
+      const orderItem = resolutionOrder[i];
+      if (Array.isArray(orderItem)) {
+        if (orderItem.some((o) => o.toLowerCase() === lowerRes)) {
+          return i;
+        }
+      } else if (orderItem.toLowerCase() === lowerRes) {
+        return i;
+      }
+    }
+    return resolutionOrder.length;
+  };
+
+  return items.sort((a, b) => {
+    let resA = parseTorrentTitle(a.title).resolution || "";
+    let resB = parseTorrentTitle(b.title).resolution || "";
+    const indexA = getResolutionIndex(resA);
+    const indexB = getResolutionIndex(resB);
+    return indexA - indexB;
+  });
+}
+
+function itemToStream(
+  item: Item,
+  servers: string[],
+  name: string,
+  id: string,
+): Stream {
   const size = getItemSize(item);
   const sizeStr = size ? toHumanFileSize(size) : undefined;
   const parsed = parseTorrentTitle(item.title);
@@ -146,7 +187,7 @@ function itemToStream(item: Item, servers: string[], name: string, id: string): 
     if (parsed.group) {
       innerParts.push(parsed.group);
     }
-    descriptionParts.push(`🎥 ${innerParts.join(' • ')}`);
+    descriptionParts.push(`🎥 ${innerParts.join(" • ")}`);
   }
   if (sizeStr) {
     descriptionParts.push(`📦 ${sizeStr.trim()}`);
@@ -159,10 +200,12 @@ function itemToStream(item: Item, servers: string[], name: string, id: string): 
     if (parsed.language) {
       audioParts.push(parsed.language);
     }
-    descriptionParts.push(`🎧 ${audioParts.join(' • ')}`);
+    descriptionParts.push(`🎧 ${audioParts.join(" • ")}`);
   }
   if (item.comments) {
-    const indexer = new URL(item.comments).hostname.replace("www.", "").replace("api.", "");
+    const indexer = new URL(item.comments).hostname
+      .replace("www.", "")
+      .replace("api.", "");
     descriptionParts.push(`🔍 ${indexer}`);
   }
 
@@ -200,7 +243,7 @@ function itemToStream(item: Item, servers: string[], name: string, id: string): 
       filename: item.title,
       videoSize: size || undefined,
       bingeGroup: bingeGroupParts.join("|"),
-    }
+    },
   };
 }
 
