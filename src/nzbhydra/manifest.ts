@@ -17,7 +17,11 @@ export const manifest: Manifest = {
   resources: [
     "catalog",
     { name: "meta", types: [catalog.type], idPrefixes: [catalog.id] },
-    { name: "stream", types: ["movie", "series", "tv"], idPrefixes: ["tt", catalog.id] },
+    {
+      name: "stream",
+      types: ["movie", "series", "tv"],
+      idPrefixes: ["tt", catalog.id],
+    },
   ],
   types: ["movie", "series", "tv"],
   catalogs: [catalog],
@@ -26,11 +30,18 @@ export const manifest: Manifest = {
 
 export const config: Config = {
   fields: [
-    { key: "indexerUrl", type: "text", title: "Indexer URL", required: true },
+    {
+      key: "indexerUrl",
+      type: "text",
+      title: "Indexer URL",
+      placeholder: "https://nzbhydra.example.com",
+      required: true,
+    },
     {
       key: "indexerApiKey",
       type: "password",
       title: "Indexer API key",
+      placeholder: "abcd1234efgh5678ijkl9012mnop3456",
       required: true,
     },
     {
@@ -39,8 +50,14 @@ export const config: Config = {
       title: "NNTP Servers",
       required: true,
       arrayOptions: [
-        { key: "server", type: "text", title: "URL", required: true },
-      ]
+        {
+          key: "server",
+          type: "text",
+          title: "URL",
+          placeholder: "nntps://username:password@example.com/4",
+          required: true,
+        },
+      ],
     },
   ],
 };

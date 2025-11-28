@@ -79,5 +79,6 @@ export interface ConfigField {
   title?: string;
   options?: string[];
   required?: boolean;
+  placeholder?: string;
   arrayOptions?: Omit<ConfigField, "arrayOptions">[];
 }
