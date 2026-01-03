@@ -157,8 +157,8 @@ function sortItemsByResolution(items: Item[]): Item[] {
   };
 
   return items.sort((a, b) => {
-    let resA = parseTorrentTitle(a.title).resolution || "";
-    let resB = parseTorrentTitle(b.title).resolution || "";
+    const resA = parseTorrentTitle(a.title).resolution || "";
+    const resB = parseTorrentTitle(b.title).resolution || "";
     const indexA = getResolutionIndex(resA);
     const indexB = getResolutionIndex(resB);
     return indexA - indexB;
@@ -175,9 +175,9 @@ function itemToStream(
   const sizeStr = size ? toHumanFileSize(size) : undefined;
   const parsed = parseTorrentTitle(item.title);
 
-  let descriptionParts = [`📁 ${parsed.title}`];
+  const descriptionParts = [`📁 ${parsed.title}`];
   if (parsed.source || parsed.codec || parsed.group) {
-    let innerParts: string[] = [];
+    const innerParts: string[] = [];
     if (parsed.source) {
       innerParts.push(parsed.source);
     }
@@ -193,7 +193,7 @@ function itemToStream(
     descriptionParts.push(`📦 ${sizeStr.trim()}`);
   }
   if (parsed.audio || parsed.language) {
-    let audioParts: string[] = [];
+    const audioParts: string[] = [];
     if (parsed.audio) {
       audioParts.push(parsed.audio);
     }
@@ -209,12 +209,12 @@ function itemToStream(
     descriptionParts.push(`🔍 ${indexer}`);
   }
 
-  let nameParts = [name];
+  const nameParts = [name];
   if (parsed.resolution) {
     nameParts.push(parsed.resolution);
   }
 
-  let bingeGroupParts: string[] = [id];
+  const bingeGroupParts: string[] = [id];
   if (parsed.resolution) {
     bingeGroupParts.push(parsed.resolution);
   }
@@ -248,9 +248,14 @@ function itemToStream(
 }
 
 function getNzbUrlFromItem(item: Item): string {
-  return (
-    item.link?.split("&amp;").join("&") || item.enclosure["@attributes"].url
-  );
+  const url =
+    item.link?.split("&amp;").join("&") || item.enclosure["@attributes"].url;
+
+  // If the URL contains '&' but not '?', replace the first '&' with '?'.
+  if (url.includes("&") && !url.includes("?")) {
+    return url.replace("&", "?");
+  }
+  return url;
 }
 
 function toHumanFileSize(size: number): string {
